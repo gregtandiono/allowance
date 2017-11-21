@@ -4,7 +4,10 @@ import (
 	"allowance"
 	ahttp "allowance/http"
 	"allowance/storm"
+	"encoding/json"
 	"log"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	sysstorm "github.com/asdine/storm"
@@ -12,6 +15,12 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/suite"
 )
+
+type getUserResponse struct {
+	Message string
+	Error   string
+	Data    *allowance.User
+}
 
 type UserHandlerTestSuite struct {
 	suite.Suite
@@ -54,6 +63,26 @@ func (suite *UserHandlerTestSuite) TearDownSuite() {
 	}
 	defer db.Close()
 	db.Drop("User")
+}
+
+func (suite *UserHandlerTestSuite) TestUserHandler_FetchUser() {
+	request, _ := http.NewRequest("GET", "/users/"+suite.userID_2.String(), nil)
+	request.Header.Set("Content-Type", "application/json")
+	response := httptest.NewRecorder()
+
+	h := suite.userHandler
+	h.UserService.Open()
+	defer h.UserService.Close()
+
+	h.ServeHTTP(response, request)
+
+	var responseBody *getUserResponse
+	json.Unmarshal(response.Body.Bytes(), &responseBody)
+
+	suite.Equal("", responseBody.Error)
+	suite.Equal("success", responseBody.Message)
+	suite.Equal("Augustus Kwok", responseBody.Data.Name)
+	suite.Equal("akwok", responseBody.Data.Username)
 }
 
 func TestUserHandlerSuite(t *testing.T) {

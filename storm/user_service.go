@@ -38,14 +38,14 @@ func (s *UserService) CreateUser(user *allowance.User) error {
 
 // UpdateUser updates an existing user record
 func (s *UserService) UpdateUser(user *allowance.User) error {
-	err := s.db.Update(&user)
+	err := s.db.Update(user)
 	return err
 }
 
 // DeleteUser removes an existing user record
 func (s *UserService) DeleteUser(userID uuid.UUID) error {
 	u := &allowance.User{ID: userID}
-	err := s.db.DeleteStruct(&u)
+	err := s.db.DeleteStruct(u)
 	return err
 }
 

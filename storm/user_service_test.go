@@ -77,8 +77,44 @@ func (suite *UserServiceTestSuite) TestUserService_CreateUser_VerifyCreate() {
 	suite.Equal("gtandiono", u.Username)
 }
 
-func (suite *UserServiceTestSuite) TestUserService_UpdateUser() {}
-func (suite *UserServiceTestSuite) TestUserService_RemoveUser() {}
+func (suite *UserServiceTestSuite) TestUserService_UpdateUser() {
+	suite.userService.Open()
+	defer suite.userService.Close()
+
+	err := suite.userService.UpdateUser(&allowance.User{
+		ID:   suite.userID_1,
+		Name: "Benjamin Tandiono",
+	})
+
+	suite.Nil(err)
+}
+
+func (suite *UserServiceTestSuite) TestUserService_UpdateUser_VerifyUpdate() {
+	suite.userService.Open()
+	defer suite.userService.Close()
+
+	u, err := suite.userService.User(suite.userID_1)
+	suite.Nil(err)
+	suite.Equal("Benjamin Tandiono", u.Name)
+	suite.Equal("gtandiono", u.Username)
+}
+
+func (suite *UserServiceTestSuite) TestUserService_RemoveUser() {
+	suite.userService.Open()
+	defer suite.userService.Close()
+
+	err := suite.userService.DeleteUser(suite.userID_2)
+	suite.Nil(err)
+}
+
+func (suite *UserServiceTestSuite) TestUserService_RemoveUser_VerifyRemoval() {
+	suite.userService.Open()
+	defer suite.userService.Close()
+
+	_, err := suite.userService.User(suite.userID_2)
+	suite.NotNil(err)
+	suite.Equal("not found", err.Error())
+}
 
 func TestUserServiceSuite(t *testing.T) {
 	suite.Run(t, new(UserServiceTestSuite))

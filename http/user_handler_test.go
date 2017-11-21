@@ -4,6 +4,7 @@ import (
 	"allowance"
 	ahttp "allowance/http"
 	"allowance/storm"
+	"bytes"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -83,6 +84,108 @@ func (suite *UserHandlerTestSuite) TestUserHandler_FetchUser() {
 	suite.Equal("success", responseBody.Message)
 	suite.Equal("Augustus Kwok", responseBody.Data.Name)
 	suite.Equal("akwok", responseBody.Data.Username)
+}
+
+func (suite *UserHandlerTestSuite) TestUserHandler_CreateUser() {
+	mockData := []byte(`{
+		"id": "` + suite.userID_1.String() + `",
+		"name": "Gregory Tandiono",
+		"username": "gtandiono",
+		"password": "somesuperawesomepassword"
+	}`)
+	request, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(mockData))
+	request.Header.Set("Content-Type", "application/json")
+	response := httptest.NewRecorder()
+
+	h := suite.userHandler
+	h.UserService.Open()
+	defer h.UserService.Close()
+
+	h.ServeHTTP(response, request)
+
+	var responseBody *ahttp.ResponseTemplate
+	json.Unmarshal(response.Body.Bytes(), &responseBody)
+
+	suite.Equal("", responseBody.Error)
+	suite.Equal("success", responseBody.Message)
+}
+
+func (suite *UserHandlerTestSuite) TestUserHandler_UpdateUser() {
+	mockData := []byte(`{
+		"name": "Jupiter Grog",
+		"username": "jgrog"
+	}`)
+	request, _ := http.NewRequest("PUT", "/users/"+suite.userID_2.String(), bytes.NewBuffer(mockData))
+	request.Header.Set("Content-Type", "application/json")
+	response := httptest.NewRecorder()
+
+	h := suite.userHandler
+	h.UserService.Open()
+	defer h.UserService.Close()
+
+	h.ServeHTTP(response, request)
+
+	var responseBody *ahttp.ResponseTemplate
+	json.Unmarshal(response.Body.Bytes(), &responseBody)
+
+	suite.Equal("", responseBody.Error)
+	suite.Equal("success", responseBody.Message)
+}
+
+func (suite *UserHandlerTestSuite) TestUserHandler_UpdateUser_VerifyUpdate() {
+	request, _ := http.NewRequest("GET", "/users/"+suite.userID_2.String(), nil)
+	request.Header.Set("Content-Type", "application/json")
+	response := httptest.NewRecorder()
+
+	h := suite.userHandler
+	h.UserService.Open()
+	defer h.UserService.Close()
+
+	h.ServeHTTP(response, request)
+
+	var responseBody *getUserResponse
+	json.Unmarshal(response.Body.Bytes(), &responseBody)
+
+	suite.Equal("", responseBody.Error)
+	suite.Equal("success", responseBody.Message)
+	suite.Equal("Jupiter Grog", responseBody.Data.Name)
+	suite.Equal("jgrog", responseBody.Data.Username)
+}
+
+func (suite *UserHandlerTestSuite) TestUserHandler_DeleteUser() {
+	request, _ := http.NewRequest("DELETE", "/users/"+suite.userID_3.String(), nil)
+	request.Header.Set("Content-Type", "application/json")
+	response := httptest.NewRecorder()
+
+	h := suite.userHandler
+	h.UserService.Open()
+	defer h.UserService.Close()
+
+	h.ServeHTTP(response, request)
+
+	var responseBody *ahttp.ResponseTemplate
+	json.Unmarshal(response.Body.Bytes(), &responseBody)
+
+	suite.Equal("", responseBody.Error)
+	suite.Equal("success", responseBody.Message)
+}
+
+func (suite *UserHandlerTestSuite) TestUserHandler_DeleteUser_VerifyDelete() {
+	request, _ := http.NewRequest("GET", "/users/"+suite.userID_3.String(), nil)
+	request.Header.Set("Content-Type", "application/json")
+	response := httptest.NewRecorder()
+
+	h := suite.userHandler
+	h.UserService.Open()
+	defer h.UserService.Close()
+
+	h.ServeHTTP(response, request)
+
+	var responseBody *getUserResponse
+	json.Unmarshal(response.Body.Bytes(), &responseBody)
+
+	suite.Equal("not found", responseBody.Error)
+	suite.Equal("fail", responseBody.Message)
 }
 
 func TestUserHandlerSuite(t *testing.T) {

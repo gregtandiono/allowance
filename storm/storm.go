@@ -1,8 +1,6 @@
 package storm
 
 import (
-	"log"
-
 	"github.com/asdine/storm"
 )
 
@@ -18,12 +16,13 @@ func NewClient(dbName string) *Client {
 }
 
 // Open opens a new boltdb conn
-func (c *Client) Open() {
+func (c *Client) Open() error {
 	db, err := storm.Open(c.dbName, storm.BoltOptions(0600, nil))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	c.db = db
+	return nil
 }
 
 // Close closes an existing boltdb conn

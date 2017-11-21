@@ -16,7 +16,13 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type UserService interface{}
+// UserService represents User model CRUD interface against the boltDB
+type UserService interface {
+	User(userID uuid.UUID) (*User, error)
+	CreateUser(u *User) error
+	UpdateUser(u *User) error
+	DeleteUser(userID uuid.UUID) error
+}
 
 type Company struct{}
 type CompanyService struct{}

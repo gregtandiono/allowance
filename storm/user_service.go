@@ -2,6 +2,7 @@ package storm
 
 import (
 	"allowance"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -31,13 +32,18 @@ func (s *UserService) CreateUser(user *allowance.User) error {
 	if err != nil {
 		return err
 	}
+
 	user.Password = string(hp)
+	user.CreatedAt = time.Now()
+	user.UpdatedAt = time.Now()
+
 	err = s.db.Save(user)
 	return err
 }
 
 // UpdateUser updates an existing user record
 func (s *UserService) UpdateUser(user *allowance.User) error {
+	user.UpdatedAt = time.Now()
 	err := s.db.Update(user)
 	return err
 }

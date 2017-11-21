@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/pborman/uuid"
+	"github.com/satori/go.uuid"
 )
 
 // UserService represents a client to the underlying BoltDB data store.
@@ -19,9 +19,9 @@ func NewUserService(client *Client) *UserService {
 }
 
 // User returns an existing user from DB
-func (s *UserService) User(id uuid.UUID) (*allowance.User, error) {
-	var user *allowance.User
-	err := s.db.One("ID", id.String(), &user)
+func (s *UserService) User(id uuid.UUID) (allowance.User, error) {
+	var user allowance.User
+	err := s.db.One("ID", id, &user)
 	return user, err
 }
 
@@ -32,7 +32,7 @@ func (s *UserService) CreateUser(user *allowance.User) error {
 		return err
 	}
 	user.Password = string(hp)
-	err = s.db.Save(&user)
+	err = s.db.Save(user)
 	return err
 }
 

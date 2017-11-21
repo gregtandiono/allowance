@@ -3,7 +3,7 @@ package allowance
 import (
 	"time"
 
-	"github.com/pborman/uuid"
+	"github.com/satori/go.uuid"
 )
 
 // User represents application user data model

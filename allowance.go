@@ -24,8 +24,21 @@ type UserService interface {
 	DeleteUser(userID uuid.UUID) error
 }
 
-type Company struct{}
-type CompanyService struct{}
+// Company represents a company registered in this application
+type Company struct {
+	ID        uuid.UUID `storm:"id" json:"id"`
+	Name      string    `storm:"index" json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// CompanyService represents company model CRUD interface against the boltDB
+type CompanyService interface {
+	Company(companyID uuid.UUID) (Company, error)
+	CreateCompany(c Company) error
+	UpdateCompany(c Company) error
+	DeleteCompany(companyID uuid.UUID) error
+}
 
 type Manager struct{}
 type ManagerService interface{}

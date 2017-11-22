@@ -59,9 +59,28 @@ func (h *CompanyHandler) handleGetCompany(w http.ResponseWriter, r *http.Request
 }
 
 func (h *CompanyHandler) handleUpdateCompany(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	cID := uuid.FromStringOrNil(vars["id"])
 
+	var c allowance.Company
+	c.ID = cID
+
+	if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
+		EncodeError(w, err, 400, h.Logger)
+	} else if err := h.CompanyService.UpdateCompany(c); err != nil {
+		EncodeError(w, err, 400, h.Logger)
+	} else {
+		EncodeJSON(w, &ResponseTemplate{Message: "success"}, h.Logger)
+	}
 }
 
 func (h *CompanyHandler) handleDeleteCompany(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	cID := uuid.FromStringOrNil(vars["id"])
 
+	if err := h.CompanyService.DeleteCompany(cID); err != nil {
+		EncodeError(w, err, 400, h.Logger)
+	} else {
+		EncodeJSON(w, &ResponseTemplate{Message: "success"}, h.Logger)
+	}
 }

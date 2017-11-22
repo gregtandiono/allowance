@@ -27,10 +27,10 @@ func NewCompanyHandler(dbName string) *CompanyHandler {
 		CompanyService: storm.NewCompanyService(storm.NewClient(dbName)),
 	}
 
-	// h.Handle("/users", http.HandlerFunc(h.handleCreateUser)).Methods("POST")
-	// h.Handle("/users/{id}", http.HandlerFunc(h.handleGetUser)).Methods("GET")
-	// h.Handle("/users/{id}", http.HandlerFunc(h.handleUpdateUser)).Methods("PUT")
-	// h.Handle("/users/{id}", http.HandlerFunc(h.handleDeleteUser)).Methods("DELETE")
+	h.Handle("/company", http.HandlerFunc(h.handleCreateCompany)).Methods("POST")
+	h.Handle("/company/{id}", http.HandlerFunc(h.handleGetCompany)).Methods("GET")
+	h.Handle("/company/{id}", http.HandlerFunc(h.handleUpdateCompany)).Methods("PUT")
+	h.Handle("/company/{id}", http.HandlerFunc(h.handleDeleteCompany)).Methods("DELETE")
 
 	return h
 }

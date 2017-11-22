@@ -32,12 +32,12 @@ func (suite *CompanyServiceTestSuite) SetupSuite() {
 
 	suite.companyService.CreateCompany(allowance.Company{
 		ID:   suite.companyID_2,
-		Name: "Augustus Kwok",
+		Name: "Cargill Feed",
 	})
 
 	suite.companyService.CreateCompany(allowance.Company{
 		ID:   suite.companyID_3,
-		Name: "Catherine Halim",
+		Name: "Chel Jedang",
 	})
 }
 

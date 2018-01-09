@@ -23,9 +23,9 @@ type CompanyServiceTestSuite struct {
 
 func (suite *CompanyServiceTestSuite) SetupSuite() {
 	suite.companyService = storm.NewCompanyService(storm.NewClient("allowance_test.db"))
-	suite.companyID_1 = uuid.NewV4()
-	suite.companyID_2 = uuid.NewV4()
-	suite.companyID_3 = uuid.NewV4()
+	suite.companyID_1, _ = uuid.NewV4()
+	suite.companyID_2, _ = uuid.NewV4()
+	suite.companyID_3, _ = uuid.NewV4()
 
 	suite.companyService.Open()
 	defer suite.companyService.Close()
